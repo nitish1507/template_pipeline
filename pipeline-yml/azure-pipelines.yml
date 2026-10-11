@@ -1,0 +1,55 @@
+trigger:
+  branches:
+    include:
+      - main
+  paths:
+    include:
+      - pipeline-yml/**
+      - pipeline-templates/**
+      - preprod/**
+      - prod/**
+
+pool:
+  name: B18_Agent
+
+variables:
+  - group: variable_groups
+
+parameters:
+  - name: environment
+    displayName: Select Environment
+    type: string
+    default: preprod
+    values:
+      - preprod
+      - prod
+
+  - name: TfSec
+    displayName: Run TfSec Scan
+    type: boolean
+    default: true
+
+  - name: TfLint
+    displayName: Run TFLint Scan
+    type: boolean
+    default: true
+
+  - name: Checkov
+    displayName: Run Checkov Scan
+    type: boolean
+    default: true
+
+  - name: Infracost
+    displayName: Run Infracost Scan
+    type: boolean
+    default: true
+
+stages:
+  - template: ../pipeline-templates/generic.yml
+    parameters:
+      environment: ${{ parameters.environment }}
+      statefile: ${{ parameters.environment }}
+      TfSec: ${{ parameters.TfSec }}
+      TfLint: ${{ parameters.TfLint }}
+      Checkov: ${{ parameters.Checkov }}
+      Infracost: ${{ parameters.Infracost }}
